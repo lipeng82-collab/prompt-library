@@ -1,0 +1,34 @@
+# .gitignore
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 敏感信息
+**/MEMORY.md
+**/memory/
+**/TOOLS.md
+**/USER.md
+**/SOUL.md
+**/HEARTBEAT.md
+**/AGENTS.md
+
+# API密钥/配置
+.env
+*.key
+*.pem
+config.local.*
+
+# 临时文件
+*.tmp
+*.bak
+*~
+
+# IDE
+.vscode/
+.idea/
+
+# 日志
+*.log
+session-logs/
