@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>湘江研究院 AI Agent 工具箱 v1.0</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    background: #0a0e1a;
+    color: #e8edf5;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* 顶部横幅 */
+  .hero {
+    position: relative;
+    height: 280px;
+    background: linear-gradient(135deg, #0a0e1a 0%, #1a1040 40%, #0d2a4a 70%, #0a1a3a 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(80,120,220,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 30%, rgba(60,200,160,0.1) 0%, transparent 50%);
+    animation: bgFloat 12s ease-in-out infinite alternate;
+  }
+
+  @keyframes bgFloat {
+    0% { transform: translate(0,0) scale(1); }
+    100% { transform: translate(-3%, 2%) scale(1.05); }
+  }
+
+  .hero-badge {
+    position: relative;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 16px;
+    border-radius: 20px;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    z-index: 1;
+  }
+
+  .hero h1 {
+    position: relative;
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    background: linear-gradient(90deg, #ffffff, #a5c4e8, #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    z-index: 1;
+    text-align: center;
+  }
+
+  .hero h1 .accent { background: linear-gradient(90deg, #60a5fa, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+  .hero-sub {
+    position: relative;
+    margin-top: 12px;
+    color: #7a9cc8;
+    font-size: 15px;
+    letter-spacing: 1px;
+    z-index: 1;
+  }
+
+  .hero-stats {
+    position: relative;
+    display: flex;
+    gap: 40px;
+    margin-top: 28px;
+    z-index: 1;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat .num {
+    font-size: 32px;
+    font-weight: 700;
+    color: #60a5fa;
+  }
+
+  .hero-stat .label {
+    font-size: 12px;
+    color: #6b82a8;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  /* 导航栏 */
+  .nav {
+    position: sticky;
+    top: 0;
+    background: rgba(10,14,26,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 0 40px;
+    display: flex;
+    gap: 8px;
+    z-index: 100;
+    overflow-x: auto;
+  }
+
+  .nav-item {
+    padding: 14px 20px;
+    font-size: 13px;
+    color: #6b82a8;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+
+  .nav-item:hover { color: #a5c4e8; }
+  .nav-item.active { color: #60a5fa; border-bottom-color: #3b82f6; }
+
+  /* 主内容 */
+  .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #e8edf5;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    letter-spacing: 1px;
+  }
+
+  /* 技能卡片网格 */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 50px;
+  }
+
+  .skill-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 22px;
+    transition: all 0.25s;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skill-card:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(100,165,250,0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+
+  .skill-card .card-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .skill-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .icon-xj { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
+  .icon-xy { background: linear-gradient(135deg, #059669, #10b981); }
+  .icon-mc { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
+  .icon-ai { background: linear-gradient(135deg, #0891b2, #22d3ee); }
+  .icon-pl { background: linear-gradient(135deg, #d97706, #fbbf24); }
+  .icon-ds { background: linear-gradient(135deg, #dc2626, #f87171); }
+  .icon-ot { background: linear-gradient(135deg, #374151, #6b7280); }
+
+  .skill-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e8edf5;
+    line-height: 1.3;
+  }
+
+  .skill-tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    margin-right: 6px;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .tag-xj { background: rgba(59,130,246,0.2); color: #93c5fd; }
+  .tag-xy { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+  .tag-mc { background: rgba(167,139,250,0.2); color: #c4b5fd; }
+  .tag-ai { background: rgba(6,182,212,0.2); color: #67e8f9; }
+  .tag-pl { background: rgba(251,191,36,0.2); color: #fcd34d; }
+  .tag-ds { background: rgba(248,113,113,0.2); color: #fca5a5; }
+  .tag-ot { background: rgba(107,114,128,0.2); color: #d1d5db; }
+
+  .skill-desc {
+    font-size: 12.5px;
+    color: #7a8aaa;
+    line-height: 1.6;
+  }
+
+  .skill-cmd {
+    margin-top: 12px;
+    background: rgba(59,130,246,0.08);
+    border: 1px solid rgba(59,130,246,0.15);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 11.5px;
+    color: #93c5fd;
+    font-family: "Consolas", "Courier New", monospace;
+  }
+
+  /* 流程图 */
+  .flow-section { margin-bottom: 50px; }
+
+  .flow-container {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding: 20px 0;
+    flex-wrap: nowrap;
+  }
+
+  .flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 130px;
+    text-align: center;
+  }
+
+  .flow-box {
+    width: 100px;
+    height: 100px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0 auto 8px;
+    transition: all 0.3s;
+  }
+
+  .flow-box:hover { transform: scale(1.08); }
+
+  .flow-box.xiang { background: linear-gradient(135deg, #1e40af, #3b82f6); box-shadow: 0 4px 20px rgba(59,130,246,0.3); }
+  .flow-box.ana { background: linear-gradient(135deg, #065f46, #10b981); box-shadow: 0 4px 20px rgba(16,185,129,0.3); }
+  .flow-box.res { background: linear-gradient(135deg, #5b21b6, #8b5cf6); box-shadow: 0 4px 20px rgba(139,92,246,0.3); }
+  .flow-box.out { background: linear-gradient(135deg, #9f1239, #e11d48); box-shadow: 0 4px 20px rgba(225,29,72,0.3); }
+  .flow-box.end { background: linear-gradient(135deg, #374151, #6b7280); box-shadow: 0 4px 20px rgba(107,114,128,0.3); }
+
+  .flow-icon { font-size: 26px; }
+  .flow-name { font-size: 12px; font-weight: 600; color: #e8edf5; }
+  .flow-role { font-size: 10px; color: rgba(255,255,255,0.6); }
+
+  .flow-arrow {
+    color: #3b5278;
+    font-size: 24px;
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+
+  /* 使用场景 */
+  .scenario { margin-bottom: 40px; }
+
+  .scenario-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .scenario-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #e8edf5;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .scenario-num {
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    color: white;
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 8px;
+  }
+
+  .scenario-flow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .scenario-step {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: #a5c4e8;
+  }
+
+  .scenario-arrow { color: #3b5278; font-size: 14px; }
+
+  /* 安装说明 */
+  .install-section {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 50px;
+  }
+
+  .install-step {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  .install-step:last-child { margin-bottom: 0; }
+
+  .install-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .install-content h4 { font-size: 15px; color: #e8edf5; margin-bottom: 6px; }
+  .install-content p { font-size: 13px; color: #7a8aaa; line-height: 1.6; }
+
+  .install-code {
+    margin-top: 8px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #86efac;
+    font-family: "Consolas", "Courier New", monospace;
+  }
+
+  /* 底部 */
+  .footer {
+    background: rgba(255,255,255,0.02);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 30px 24px;
+    text-align: center;
+    color: #4a5568;
+    font-size: 12px;
+  }
+
+  .footer .version { color: #3b82f6; font-weight: 600; }
+  .footer .date { color: #6b7280; margin-left: 16px; }
+</style>
+</head>
+<body>
+
+<!-- 顶部横幅 -->
+<div class="hero">
+  <div class="hero-badge">WORKBUDDY AI TOOLKIT</div>
+  <h1>湘江研究院 <span class="accent">AI Agent 工具箱</span></h1>
+  <div class="hero-sub">湘字号智能工作体系 · 共建共享 · 即装即用</div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="num">23</div>
+      <div class="label">核心 Skills</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">6</div>
+      <div class="label">协作流程</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">4</div>
+      <div class="label">典型场景</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">1.0</div>
+      <div class="label">版本号</div>
+    </div>
+  </div>
+</div>
+
+<!-- 导航 -->
+<div class="nav">
+  <div class="nav-item active" onclick="scrollTo('skills')">技能速查</div>
+  <div class="nav-item" onclick="scrollTo('flow')">协作流程</div>
+  <div class="nav-item" onclick="scrollTo('scenarios')">典型场景</div>
+  <div class="nav-item" onclick="scrollTo('install')">安装说明</div>
+</div>
+
+<div class="container">
+
+  <!-- 技能速查 -->
+  <h2 class="section-title" id="skills">一、核心技能速查</h2>
+
+  <!-- 湘字号 -->
+  <p style="color:#6b82a8;font-size:13px;margin-bottom:14px;letter-spacing:1px;">湘字号智能体 · 8个</p>
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="card-top">
+        <div class="skill-icon icon-xj">🎯</div>
+        <div class="skill-name">湘小策</div>
+      </div>
+      <span class="skill-tag tag-xj">协调器</span><span class="skill-tag tag-xj">湘字号</span>
+      <div class="skill-desc">智库政策研究与报告生成的全局协调器，统领多 Agent 协作完成专报撰写</div>
+      <div class="skill-cmd">使用湘小策 [任务描述]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top">
+        <div class="skill-icon icon-xj">📝</div>
+        <div class="skill-name">湘小协</div>
+      </div>
+      <span class="skill-tag tag-xj">写作三件套</span><span class="skill-tag tag-xj">湘字号</span>
+      <div class="skill-desc">课题申报标准化工作流，统筹申报书各模块高效撰写与审核</div>
+      <div class="skill-cmd">使用湘小协 [课题申报任务]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top">
+        <div class="skill-icon icon-xj">🔬</div>
+        <div class="skill-name">湘小研</div>
+      </div>
+      <span class="skill-tag tag-xj">研究协调</span><span class="skill-tag tag-xj">湘字号</span>
+      <div class="skill-desc">研究协调中枢，支持多 Agent 深度协同分析复杂政策与产业议题</div>
+      <div class="skill-cmd">使用湘小研 [研究议题]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top">
+        <div class="skill-icon icon-xj">🏅</div>
+        <div class="skill-name">湘小印</div>
+      </div>
+      <span class="skill-tag tag-xj">出品审核</span><span class="skill-tag tag-xj">湘字号</span>
+      <div class="skill-desc">文档标准化输出与出品质量审核，确保研究成果符合院规范</div>
+      <div class="skill-cmd">使用湘小印 [待审核文档]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top">
+        <div class="skill-icon icon-xj">📁</div>
+        <div class="skill-name">湘小档</div>
+      </div>
+      <span class="skill-tag tag-xj">知识管理</span><span class="skill-tag tag-xj">湘字号</span>
+      <div class="skill-desc">知识库档案管理与 RAG 检索，快速调取历史研究与政策文件</div>
+      <div class="skill-cmd">使用湘小档 [检索关键词]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top">
+        <div class="skill-icon icon-xj">⚖️</div>
+        <div class="skill-name">湘小法</div>
+      </div>
+      <span class="skill-tag tag-xj">合规审查</span><span class="skill-tag tag-xj">湘字号</span>
+      <div class="skill-desc">国资合规审查与风险提示，识别政策风险与合规隐患</div>
+      <div class="skill-cmd">使用湘小法 [待审材料]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top">
+        <div class="skill-icon icon-xj">🔒</div>
+        <div class="skill-name">湘小审</div>
+      </div>
+      <span class="skill-tag tag-xj">权限审批</span><span class="skill-tag tag-xj">湘字号</span>
+      <div class="skill-desc">权限审批与操作审计，记录与管控敏感操作</div>
+      <div class="skill-cmd">使用湘小审 [权限申请]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top">
+        <div class="skill-icon icon-xj">⚡</div>
+        <div class="skill-name">湘小控</div>
+      </div>
+      <span class="skill-tag tag-xj">成本控制</span><span class="skill-tag tag-xj">湘字号</span>
+      <div class="skill-desc">Token 用量控制与成本管理，优化多模型调用效率</div>
+      <div class="skill-cmd">使用湘小控 [控制指令]</div>
+    </div>
+  </div>
+
+  <!-- 专业分析 -->
+  <p style="color:#6b82a8;font-size:13px;margin-bottom:14px;letter-spacing:1px;margin-top:10px;">专业分析技能 · 6个</p>
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="card-top"><div class="skill-icon icon-xy">🔗</div><div class="skill-name">产业分析</div></div>
+      <span class="skill-tag tag-xy">行业分析</span>
+      <div class="skill-desc">产业链与产业政策分析，识别战略新兴产业机会与竞争格局</div>
+      <div class="skill-cmd">使用产业分析 [行业名称]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top"><div class="skill-icon icon-xy">📊</div><div class="skill-name">数据分析</div></div>
+      <span class="skill-tag tag-xy">量化支撑</span>
+      <div class="skill-desc">研究专用数据分析与可视化，支持国资国企关键指标量化分析</div>
+      <div class="skill-cmd">使用数据分析 [分析需求]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top"><div class="skill-icon icon-xy">🌐</div><div class="skill-name">宏观分析</div></div>
+      <span class="skill-tag tag-xy">趋势研判</span>
+      <div class="skill-desc">宏观经济与政策研判，为规划编制提供宏观视野和趋势判断</div>
+      <div class="skill-cmd">使用宏观分析 [研究主题]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top"><div class="skill-icon icon-mc">📋</div><div class="skill-name">深度研究</div></div>
+      <span class="skill-tag tag-mc">综合研究</span>
+      <div class="skill-desc">深度研究与报告撰写，围绕复杂议题构建系统性研究框架</div>
+      <div class="skill-cmd">使用深度研究 [议题]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top"><div class="skill-icon icon-ai">🎓</div><div class="skill-name">学术研究</div></div>
+      <span class="skill-tag tag-ai">学术出版</span>
+      <div class="skill-desc">学术论文撰写与期刊投稿辅助，提升研究院学术影响力</div>
+      <div class="skill-cmd">使用学术研究 [研究方向]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top"><div class="skill-icon icon-ai">🤖</div><div class="skill-name">AI转型顾问</div></div>
+      <span class="skill-tag tag-ai">数字化</span>
+      <div class="skill-desc">国资国企 AI 能力建设与数字化转型方案设计与实施指导</div>
+      <div class="skill-cmd">使用AI转型 [目标企业]</div>
+    </div>
+  </div>
+
+  <!-- 政策研究 -->
+  <p style="color:#6b82a8;font-size:13px;margin-bottom:14px;letter-spacing:1px;margin-top:10px;">政策研究技能 · 4个</p>
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="card-top"><div class="skill-icon icon-pl">🔍</div><div class="skill-name">政策追踪</div></div>
+      <span class="skill-tag tag-pl">政策监测</span>
+      <div class="skill-desc">国资国企政策追踪与解读，每日监测政策动态，提取要点与影响分析</div>
+      <div class="skill-cmd">使用政策追踪 [关键词]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top"><div class="skill-icon icon-pl">📄</div><div class="skill-name">专报撰写</div></div>
+      <span class="skill-tag tag-pl">决策支撑</span>
+      <div class="skill-desc">智库专报撰写与优化，将研究成果转化为高质量专报争取批示</div>
+      <div class="skill-cmd">使用专报撰写 [主题]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top"><div class="skill-icon icon-pl">📑</div><div class="skill-name">课题申报</div></div>
+      <span class="skill-tag tag-pl">申报辅助</span>
+      <div class="skill-desc">课题申报书编写与优化，提升课题中标率的标准化申报工具</div>
+      <div class="skill-cmd">使用课题申报 [课题方向]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top"><div class="skill-icon icon-pl">🗃️</div><div class="skill-name">知识管理</div></div>
+      <span class="skill-tag tag-pl">RAG检索</span>
+      <div class="skill-desc">智库知识库管理与 RAG 检索，实现历史研究与资料智能调取</div>
+      <div class="skill-cmd">使用知识管理 [问题]</div>
+    </div>
+  </div>
+
+  <!-- 麦肯锡方法论 -->
+  <p style="color:#6b82a8;font-size:13px;margin-bottom:14px;letter-spacing:1px;margin-top:10px;">麦肯锡方法论 · 3个</p>
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="card-top"><div class="skill-icon icon-mc">🧩</div><div class="skill-name">MECE分解</div></div>
+      <span class="skill-tag tag-mc">结构化</span>
+      <div class="skill-desc">MECE 结构化分解工具，将复杂问题拆解为相互独立、完全穷尽的子议题</div>
+      <div class="skill-cmd">使用MECE [议题]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top"><div class="skill-icon icon-mc">🛠️</div><div class="skill-name">七步成诗</div></div>
+      <span class="skill-tag tag-mc">问题解决</span>
+      <div class="skill-desc">麦肯锡七步成诗法，系统化问题分析与解决框架</div>
+      <div class="skill-cmd">使用七步成诗 [问题]</div>
+    </div>
+    <div class="skill-card">
+      <div class="card-top"><div class="skill-icon icon-mc">📐</div><div class="skill-name">金字塔表达</div></div>
+      <span class="skill-tag tag-mc">汇报表达</span>
+      <div class="skill-desc">金字塔原理表达与汇报结构设计，让观点精准传达</div>
+      <div class="skill-cmd">使用金字塔 [核心观点]</div>
+    </div>
+  </div>
+
+  <!-- 协作流程 -->
+  <h2 class="section-title" id="flow" style="margin-top:30px;">二、Agent 协作流程</h2>
+  <div class="flow-section">
+    <div class="flow-container">
+      <div class="flow-step">
+        <div class="flow-box xiang"><span class="flow-icon">🎯</span><span class="flow-name">湘小策</span><span class="flow-role">任务分解</span></div>
+        <span class="flow-name" style="font-size:11px;color:#6b82a8;">任务接收与分解</span>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <div class="flow-box ana"><span class="flow-icon">🔗</span><span class="flow-name">产业分析</span><span class="flow-role">行业视角</span></div>
+        <span class="flow-name" style="font-size:11px;color:#6b82a8;">产业链全景梳理</span>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <div class="flow-box ana"><span class="flow-icon">📊</span><span class="flow-name">数据分析</span><span class="flow-role">量化支撑</span></div>
+        <span class="flow-name" style="font-size:11px;color:#6b82a8;">关键指标量化</span>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <div class="flow-box ana"><span class="flow-icon">🌐</span><span class="flow-name">宏观分析</span><span class="flow-role">趋势研判</span></div>
+        <span class="flow-name" style="font-size:11px;color:#6b82a8;">宏观环境研判</span>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <div class="flow-box res"><span class="flow-icon">📋</span><span class="flow-name">深度研究</span><span class="flow-role">综合提炼</span></div>
+        <span class="flow-name" style="font-size:11px;color:#6b82a8;">综合形成结论</span>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <div class="flow-box out"><span class="flow-icon">📝</span><span class="flow-name">专报撰写</span><span class="flow-role">输出成稿</span></div>
+        <span class="flow-name" style="font-size:11px;color:#6b82a8;">专报初稿输出</span>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">
+        <div class="flow-box end"><span class="flow-icon">🏅</span><span class="flow-name">湘小印</span><span class="flow-role">审核出品</span></div>
+        <span class="flow-name" style="font-size:11px;color:#6b82a8;">标准化终稿</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 典型场景 -->
+  <h2 class="section-title" id="scenarios">三、典型使用场景</h2>
+
+  <div class="scenario-card">
+    <div class="scenario-title"><span class="scenario-num">1</span> 国资国企改革专报撰写</div>
+    <div class="scenario-flow">
+      <span class="scenario-step">湘小策 接收任务</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">政策追踪 政策梳理</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">产业分析 格局分析</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">数据分析 量化支撑</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">宏观分析 环境研判</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">专报撰写 成稿输出</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">湘小印 审核出品</span>
+    </div>
+  </div>
+
+  <div class="scenario-card">
+    <div class="scenario-title"><span class="scenario-num">2</span> 省国资委课题申报</div>
+    <div class="scenario-flow">
+      <span class="scenario-step">湘小协 启动申报</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">深度研究 背景调研</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">MECE 框架搭建</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">产业+宏观 数据支撑</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">课题申报书 输出</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">湘小印 格式审核</span>
+    </div>
+  </div>
+
+  <div class="scenario-card">
+    <div class="scenario-title"><span class="scenario-num">3</span> 城投退平台转型路径分析</div>
+    <div class="scenario-flow">
+      <span class="scenario-step">湘小研 统筹分析</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">深度研究 转型案例</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">产业分析 机会识别</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">数据分析 量化评估</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">七步成诗 路径设计</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">湘小印 出品报告</span>
+    </div>
+  </div>
+
+  <div class="scenario-card">
+    <div class="scenario-title"><span class="scenario-num">4</span> 季度经营分析报告</div>
+    <div class="scenario-flow">
+      <span class="scenario-step">湘小协 启动季度报告</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">政策追踪 政策动态</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">宏观分析 经济形势</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">数据分析 指标更新</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">深度研究 综合研判</span>
+      <span class="scenario-arrow">→</span>
+      <span class="scenario-step">湘小印 标准化输出</span>
+    </div>
+  </div>
+
+  <!-- 安装说明 -->
+  <h2 class="section-title" id="install">四、给同事的安装说明</h2>
+  <div class="install-section">
+    <div class="install-step">
+      <div class="install-num">1</div>
+      <div class="install-content">
+        <h4>获取工具箱</h4>
+        <p>通过微信/邮件/U盘接收工具箱压缩包，解压到任意目录（如桌面）</p>
+      </div>
+    </div>
+    <div class="install-step">
+      <div class="install-num">2</div>
+      <div class="install-content">
+        <h4>一键安装</h4>
+        <p>双击运行目录中的 <strong style="color:#e8edf5">install.bat</strong>，等待自动完成（约10秒）</p>
+        <div class="install-code">正在复制技能文件... 完成！</div>
+      </div>
+    </div>
+    <div class="install-step">
+      <div class="install-num">3</div>
+      <div class="install-content">
+        <h4>重启 WorkBuddy</h4>
+        <p>关闭并重新打开 WorkBuddy，使新技能生效</p>
+      </div>
+    </div>
+    <div class="install-step">
+      <div class="install-num">4</div>
+      <div class="install-content">
+        <h4>开始使用</h4>
+        <p>在 WorkBuddy 对话框中输入调用指令即可，例如：</p>
+        <div class="install-code">使用湘小策 帮我撰写一篇关于省属国企战新产业布局的专报</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <span class="version">湘江研究院 AI Agent 工具箱 v1.0</span>
+  <span class="date">2026年4月14日</span>
+  <span style="margin-left:16px;color:#3b5278;">|</span>
+  <span style="margin-left:16px;">研究中心制</span>
+</div>
+
+<script>
+  function scrollTo(id) {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+    event.target.classList.add('active');
+  }
+
+  // 数字动画
+  document.querySelectorAll('.hero-stat .num').forEach(function(el) {
+    var target = el.textContent;
+    if (target.match(/^\d+$/)) {
+      var n = parseInt(target);
+      el.textContent = '0';
+      var i = 0;
+      var step = Math.ceil(n / 30);
+      var timer = setInterval(function() {
+        i += step;
+        if (i >= n) { el.textContent = n; clearInterval(timer); }
+        else el.textContent = i;
+      }, 30);
+    }
+  });
+</script>
+
+</body>
+</html>

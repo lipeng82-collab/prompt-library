@@ -32,3 +32,22 @@ config.local.*
 # 日志
 *.log
 session-logs/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Binary outputs
+*.pdf
+*.zip
+*.xlsx
+*.xls
+*.doc
+*.docx
+*.pptx

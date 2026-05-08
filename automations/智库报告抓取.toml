@@ -1,0 +1,44 @@
+name = "智库研究报告周度抓取"
+description = "每周一上午12点自动从22个智库渠道（14中国+8国际）抓取研究报告，覆盖8大关注主题"
+trigger = "schedule"
+scheduleType = "recurring"
+rrule = "FREQ=WEEKLY;BYDAY=MO;BYHOUR=12;BYMINUTE=0"
+validFrom = "2026-04-18"
+status = "ACTIVE"
+# 注意：请修改为同事自己的工作目录路径
+cwds = ["{USER_HOME}/WorkBuddy/Claw"]
+
+[prompt]
+执行智库研究报告周度抓取任务。从22个智库渠道（14个中国+8个国际）自动抓取研究报告，筛选与8大关注主题相关的内容。
+
+## 关注主题（8大领域）
+①低空经济/商业航天/空间科技
+②AI算力产业/量子信息
+③国资国企改革/国有资本运营
+④宏观经济/区域发展/产业政策
+⑤产业发展与投资分析
+⑥资产盘活及转型
+⑦党建
+⑧人才
+
+## 抓取渠道（22个）
+中国智库(14): 国务院发展研究中心(drc.gov.cn)、中国社会科学院(cssn.cn)、国经中心(cciee.org.cn)、发改委宏观院(amr.org.cn)、财政部财科所(crifs.org.cn)、国资委研究中心(sasac.gov.cn)、中改院(cird.org.cn)、国研院(ciis.org.cn)、现代院(cirsd.org.cn)、科技部战略院(casted.org.cn)、赛迪研究院(ccidgroup.com)、信通院(caict.ac.cn)、清华国情研究院(iccs.tsinghua.edu.cn)、北大国发院(nsd.pku.edu.cn)
+
+国际智库(8): 布鲁金斯(brookings.edu)、PIIE(piie.com)、兰德(rand.org)、麦肯锡MGI(mckinsey.com/mgi)、BCG(bcg.com/publications)、WEF(weforum.org/reports)、IEA(iea.org/reports)、IMF(imf.org/en/Publications)
+
+## 执行步骤
+步骤1: 用web_fetch遍历22个渠道的报告列表页（按Tier优先级）
+步骤2: 对每篇报告标题+摘要进行关键词过滤（标题权重2.0+摘要权重1.0，阈值≥1.5保留）
+步骤3: 提取元数据（标题/机构/日期/类型/摘要/下载链接/访问类型）
+步骤4: 合规获取：免费报告下载PDF存入 {WORKSPACE}/资料/知识库/智库报告抓取/YYYY-MM/；需注册/付费仅记录元数据
+步骤5: 生成两个文件：
+  - 报告清单.md（完整索引表格）
+  - 智库报告每周精选.md（Top10推荐+核心观点+分领域统计+待跟进资源）
+步骤6: 企微Webhook推送摘要（可选，需配置Webhook地址）
+
+## 输出要求
+覆盖≥15个渠道（70%），每个渠道至少获取近1周报告，每周精选必须有实质性分析不能只列标题。
+
+## 变量说明
+- {USER_HOME}: 用户主目录（如 C:/Users/用户名）
+- {WORKSPACE}: 工作空间目录（如 D:/Work@湘江研究院/2026）
