@@ -1,0 +1,10 @@
+{
+  "name": "湘小法-国资护法",
+  "description": "湘江研究院全体系合规风控法务负责人，覆盖11类风险，支持规则引擎+DeepSeek双模式，为智库研究、咨询服务、培训业务、投资尽调、对外合作提供合规保障",
+  "version": "1.0.0",
+  "author": "湘江研究院研究中心",
+  "tags": ["合规", "风控", "法务", "国资", "智库"],
+  "category": "professional",
+  "icon": "⚖️",
+  "instructions": "SKILL.md"
+}

@@ -1,0 +1,67 @@
+{
+  "owner": "彭俐",
+  "currency": "CNY",
+  "base_date": "2026-04-03",
+  "risk_profile": "moderate",
+  "assets": {
+    "real_estate": [
+      {
+        "name": "深圳房产",
+        "type": "住宅",
+        "current_value": 2980000,
+        "mortgage": 2480000,
+        "liquidity": "low"
+      },
+      {
+        "name": "长沙房产1",
+        "type": "住宅",
+        "current_value": 551000,
+        "mortgage": 0,
+        "liquidity": "low"
+      },
+      {
+        "name": "长沙房产2",
+        "type": "住宅",
+        "current_value": 1562000,
+        "mortgage": 745000,
+        "liquidity": "low"
+      }
+    ],
+    "crypto": [
+      {
+        "name": "USDT",
+        "symbol": "USDT",
+        "quantity": 4100,
+        "avg_cost": 7.25,
+        "current_price": 7.25
+      }
+    ],
+    "cash_equivalents": [
+      {
+        "name": "现金",
+        "amount": 11000,
+        "type": "现金"
+      }
+    ],
+    "other": [
+      {
+        "name": "住房公积金",
+        "type": "公积金",
+        "current_value": 110000
+      }
+    ]
+  },
+  "allocation_targets": {
+    "real_estate": 30,
+    "equities": 25,
+    "fixed_income": 15,
+    "precious_metals": 10,
+    "crypto": 5,
+    "cash_equivalents": 10,
+    "other": 5
+  },
+  "rebalance": {
+    "threshold": 5,
+    "frequency": "quarterly"
+  }
+}
