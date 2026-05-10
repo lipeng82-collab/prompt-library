@@ -1,0 +1,190 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://xiangjiang-thinktank.org/schemas/tool-registry/v1.0.0",
+  "title": "湘字号技能工具注册中心",
+  "description": "湘字号AI体系工具注册与发现机制",
+  "version": "1.0.0",
+  "last_updated": "2026-05-10T22:35:00+08:00",
+  "registry": {
+    "xiangxiaoyan": {
+      "name": "湘小研·政策智搜",
+      "skill_id": "xiangxiaoyan",
+      "schema_file": "xiangxiaoyan.schema.json",
+      "version": "2.1.0",
+      "category": "research",
+      "status": "active",
+      "description": "基于RAG技术的政策检索、解读与报告生成",
+      "actions": [
+        "policy_search",
+        "policy_interpret",
+        "report_generate",
+        "policy_compare",
+        "rag_query",
+        "style_check",
+        "recurrent_research"
+      ],
+      "dependencies": [],
+      "permissions": ["read", "search"],
+      "max_loops": 5,
+      "token_budget": "standard"
+    },
+    "xiangxiaoyin": {
+      "name": "湘小印·文档出品",
+      "skill_id": "xiangxiaoyin",
+      "schema_file": "xiangxiaoyin.schema.json",
+      "version": "1.3.0",
+      "category": "document",
+      "status": "active",
+      "description": "Markdown转Word公文格式标准化出品",
+      "actions": [
+        "format_convert",
+        "tone_polish",
+        "compliance_check",
+        "full_pipeline",
+        "template_switch",
+        "quality_inspect",
+        "recurrent_produce"
+      ],
+      "dependencies": ["xiangxiaofa"],
+      "permissions": ["read", "write"],
+      "max_loops": 5,
+      "token_budget": "standard"
+    },
+    "xiangxiaofa": {
+      "name": "湘小法·国资护法",
+      "skill_id": "xiangxiaofa",
+      "schema_file": "xiangxiaofa.schema.json",
+      "version": "3.0.0",
+      "category": "compliance",
+      "status": "active",
+      "description": "合规风控法务审查与质量门禁",
+      "actions": [
+        "legal_review",
+        "compliance_audit",
+        "risk_assessment",
+        "quality_gate",
+        "contract_review",
+        "due_diligence",
+        "seven_laws_check",
+        "data_source_verify",
+        "output_template"
+      ],
+      "dependencies": [],
+      "permissions": ["read", "audit"],
+      "max_loops": 1,
+      "token_budget": "high"
+    },
+    "xiangxiaoxie": {
+      "name": "湘小协·Harness协调器",
+      "skill_id": "xiangxiaoxie",
+      "schema_file": "xiangxiaoxie.schema.json",
+      "version": "1.2.1",
+      "category": "orchestration",
+      "status": "active",
+      "description": "Generator-Evaluator对抗流水线管理",
+      "actions": [
+        "ge_pipeline",
+        "ipc_route",
+        "whiteboard_diagnose",
+        "batch_evaluate",
+        "complexity_assess",
+        "advisor_consult",
+        "ge_status",
+        "quality_gate"
+      ],
+      "dependencies": ["xiangxiaofa", "xiangxiaoche"],
+      "permissions": ["read", "execute", "coordinate"],
+      "max_loops": 5,
+      "token_budget": "high"
+    },
+    "xiangxiaoche": {
+      "name": "湘小策·智能顾问",
+      "skill_id": "xiangxiaoche",
+      "schema_file": "xiangxiaoche.schema.json",
+      "version": "1.0.0",
+      "category": "advisor",
+      "status": "active",
+      "description": "战略方向与方法论的轻量级顾问服务",
+      "actions": [
+        "strategy_advice",
+        "methodology_advice",
+        "soe_context_advice",
+        "cost_control_advice"
+      ],
+      "dependencies": [],
+      "permissions": ["read", "advise"],
+      "max_loops": 1,
+      "token_budget": "low"
+    },
+    "xiangxiaoshen": {
+      "name": "湘小审·国资护审",
+      "skill_id": "xiangxiaoshen",
+      "schema_file": "xiangxiaoshen.schema.json",
+      "version": "1.0.0",
+      "category": "security",
+      "status": "active",
+      "description": "权限审批与操作安全风控",
+      "actions": [
+        "risk_assess",
+        "permission_check",
+        "operation_log",
+        "alert_check",
+        "whitelist_manage"
+      ],
+      "dependencies": [],
+      "permissions": ["audit", "control"],
+      "max_loops": 1,
+      "token_budget": "low"
+    }
+  },
+  "ge_pairs": {
+    "GE-01": {
+      "generator": "xiangxiaoyan",
+      "evaluator": "xiangxiaofa",
+      "mode": "full",
+      "trigger": "mandatory",
+      "description": "政策研究→全维合规评估"
+    },
+    "GE-02": {
+      "generator": "policy-report-writer",
+      "evaluator": "xiangxiaofa",
+      "mode": "full",
+      "trigger": "mandatory",
+      "description": "专报撰写→全维合规评估"
+    },
+    "GE-03": {
+      "generator": "deep-research",
+      "evaluator": "xiangxiaofa",
+      "mode": "research",
+      "trigger": "mandatory",
+      "description": "深度研究→研究模式评估"
+    },
+    "GE-04": {
+      "generator": "industry-chain-analysis",
+      "evaluator": "xiangxiaofa",
+      "mode": "full",
+      "trigger": "mandatory",
+      "description": "产业分析→全维合规评估"
+    },
+    "GE-07": {
+      "generator": "policy-report-writer",
+      "evaluator": "xiangxiaofa",
+      "mode": "full",
+      "trigger": "mandatory",
+      "description": "智库专报→全维合规评估"
+    },
+    "GE-10": {
+      "generator": "fyp-interpreter",
+      "evaluator": "xiangxiaofa",
+      "mode": "full",
+      "trigger": "mandatory",
+      "description": "规划纲要解读→全维合规评估"
+    }
+  },
+  "discovery": {
+    "endpoint": "file://C:/Users/Lee Gilbert/.qclaw/workspace/xiang-tools-schema/tool-registry.json",
+    "refresh_interval": 3600,
+    "auto_register": true,
+    "validation": "strict"
+  }
+}

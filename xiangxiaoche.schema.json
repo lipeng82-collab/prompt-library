@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://xiangjiang-thinktank.org/schemas/xiangxiaoche/v1.0.0",
+  "title": "湘小策·智能顾问 Tool Schema",
+  "description": "湘江研究院智能顾问Agent(Advisor Pattern)的工具Schema定义",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["tool_name", "parameters"],
+  "properties": {
+    "tool_name": {
+      "type": "string",
+      "enum": ["xiangxiaoche"],
+      "description": "工具标识符"
+    },
+    "parameters": {
+      "type": "object",
+      "required": ["advisor_type", "query"],
+      "properties": {
+        "advisor_type": {
+          "type": "string",
+          "enum": ["strategy", "methodology", "soe_context", "cost_control", "auto"],
+          "description": "顾问类型：strategy=战略方向, methodology=方法论, soe_context=国资语境, cost_control=成本控制, auto=自动判断"
+        },
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "description": "具体咨询问题"
+        },
+        "context_summary": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "当前任务摘要(≤200字)"
+        },
+        "generator_agent": {
+          "type": "string",
+          "description": "发起咨询的Agent名称"
+        },
+        "use_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "default": 1,
+          "description": "本次任务中已使用次数"
+        },
+        "max_uses": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "default": 3,
+          "description": "单次任务的顾问咨询上限"
+        },
+        "token_budget": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 500,
+          "default": 400,
+          "description": "Token预算(字)"
+        },
+        "output_format": {
+          "type": "string",
+          "enum": ["structured", "text"],
+          "default": "structured",
+          "description": "输出格式"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "tool_name": "xiangxiaoche",
+      "parameters": {
+        "advisor_type": "strategy",
+        "query": "以低空经济产业链安全为主线的假设是否成立？",
+        "context_summary": "正在撰写湖南省低空经济十五五规划研究，已完成产业全景分析，目前处于Issue Tree构建阶段",
+        "generator_agent": "deep-research",
+        "use_count": 1,
+        "max_uses": 3
+      }
+    }
+  ]
+}

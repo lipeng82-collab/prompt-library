@@ -1,0 +1,215 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://xiangjiang-thinktank.org/schemas/xiangxiaoxie/v1.2.1",
+  "title": "湘小协·Harness工程协调器 Tool Schema",
+  "description": "湘江研究院Generator-Evaluator对抗流水线协调器的工具Schema定义",
+  "version": "1.2.1",
+  "type": "object",
+  "required": ["tool_name", "parameters"],
+  "properties": {
+    "tool_name": {
+      "type": "string",
+      "enum": ["xiangxiaoxie"],
+      "description": "工具标识符"
+    },
+    "parameters": {
+      "type": "object",
+      "required": ["action"],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "ge_pipeline",
+            "ipc_route",
+            "whiteboard_diagnose",
+            "batch_evaluate",
+            "complexity_assess",
+            "advisor_consult",
+            "ge_status",
+            "quality_gate"
+          ],
+          "description": "执行的操作类型"
+        },
+        "ge_pair_id": {
+          "type": "string",
+          "enum": [
+            "GE-01", "GE-02", "GE-03", "GE-04", "GE-05",
+            "GE-06", "GE-07", "GE-08", "GE-09", "GE-10"
+          ],
+          "description": "GE配对编号"
+        },
+        "generator_agent": {
+          "type": "string",
+          "enum": [
+            "xiangxiaoyan",
+            "policy-report-writer",
+            "deep-research",
+            "industry-chain-analysis",
+            "data-analysis-xt",
+            "china-macro-analyst",
+            "xiangxiaoyin",
+            "fyp-interpreter"
+          ],
+          "description": "Generator Agent名称"
+        },
+        "evaluator_agent": {
+          "type": "string",
+          "enum": [
+            "xiangxiaofa",
+            "xiangxiaoshu",
+            "xiangxiaobao"
+          ],
+          "description": "Evaluator Agent名称"
+        },
+        "target_file": {
+          "type": "string",
+          "description": "待评估文件路径（裸路径格式）"
+        },
+        "execution_mode": {
+          "type": "string",
+          "enum": ["manual", "auto", "batch"],
+          "default": "manual",
+          "description": "执行模式：manual=手动, auto=自动, batch=批量"
+        },
+        "complexity": {
+          "type": "string",
+          "enum": ["simple", "complex", "highly_complex"],
+          "description": "任务复杂度（可自动评估或人工指定）"
+        },
+        "ipc_message": {
+          "type": "object",
+          "description": "IPC消息体（用于ipc_route action）",
+          "properties": {
+            "protocol_version": {
+              "type": "string",
+              "default": "1.2"
+            },
+            "message_type": {
+              "type": "string",
+              "enum": [
+                "EVALUATION_REQUEST",
+                "EVALUATION_RESPONSE",
+                "EVALUATION_PASS",
+                "ADVISOR_REQUEST",
+                "ADVISOR_RESPONSE"
+              ]
+            },
+            "payload": {
+              "type": "object"
+            }
+          }
+        },
+        "advisor_config": {
+          "type": "object",
+          "description": "顾问咨询配置（用于advisor_consult action）",
+          "properties": {
+            "advisor_type": {
+              "type": "string",
+              "enum": ["strategy", "methodology", "soe_context", "cost_control", "auto"],
+              "default": "auto"
+            },
+            "query": {
+              "type": "string",
+              "description": "咨询问题"
+            },
+            "context_summary": {
+              "type": "string",
+              "maxLength": 200,
+              "description": "当前任务摘要"
+            },
+            "use_count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "default": 1,
+              "description": "当前已使用次数"
+            },
+            "max_uses": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "default": 3,
+              "description": "最大使用次数"
+            }
+          }
+        },
+        "whiteboard_config": {
+          "type": "object",
+          "description": "白板协作配置（用于whiteboard_diagnose action）",
+          "properties": {
+            "topic": {
+              "type": "string",
+              "description": "白板议题"
+            },
+            "participants": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "参与者Agent列表"
+            },
+            "duration_minutes": {
+              "type": "integer",
+              "minimum": 5,
+              "maximum": 120,
+              "default": 45,
+              "description": "白板会议时长"
+            }
+          }
+        },
+        "batch_config": {
+          "type": "object",
+          "description": "批量评估配置（用于batch_evaluate action）",
+          "properties": {
+            "ge_pairs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "pair_id": { "type": "string" },
+                  "generator_agent": { "type": "string" },
+                  "evaluator_agent": { "type": "string" },
+                  "target_file": { "type": "string" }
+                }
+              }
+            },
+            "parallel": {
+              "type": "boolean",
+              "default": true,
+              "description": "是否并行执行"
+            }
+          }
+        },
+        "pass_threshold": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 37,
+          "default": 34,
+          "description": "通过阈值"
+        },
+        "max_rounds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "default": 3,
+          "description": "最大评估轮次"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "tool_name": "xiangxiaoxie",
+      "parameters": {
+        "action": "ge_pipeline",
+        "ge_pair_id": "GE-01",
+        "generator_agent": "xiangxiaoyan",
+        "evaluator_agent": "xiangxiaofa",
+        "target_file": "D:\\Work@湘江研究院\\2026\\0410课题\\低空经济分析.md",
+        "execution_mode": "manual",
+        "pass_threshold": 34,
+        "max_rounds": 3
+      }
+    }
+  ]
+}

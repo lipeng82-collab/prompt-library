@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://xiangjiang-thinktank.org/schemas/xiangxiaoyin/v1.3.0",
+  "title": "湘小印·文档出品 Tool Schema",
+  "description": "湘江研究院文档标准化出品管家的工具Schema定义",
+  "version": "1.3.0",
+  "type": "object",
+  "required": ["tool_name", "parameters"],
+  "properties": {
+    "tool_name": {
+      "type": "string",
+      "enum": ["xiangxiaoyin"],
+      "description": "工具标识符"
+    },
+    "parameters": {
+      "type": "object",
+      "required": ["action", "input_file"],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "format_convert",
+            "tone_polish",
+            "compliance_check",
+            "full_pipeline",
+            "template_switch",
+            "quality_inspect",
+            "recurrent_produce"
+          ],
+          "description": "执行的操作类型"
+        },
+        "input_file": {
+          "type": "string",
+          "description": "输入Markdown文件路径（裸路径格式）"
+        },
+        "template": {
+          "type": "string",
+          "enum": ["S", "A", "B", "C"],
+          "default": "S",
+          "description": "版式模板：S=省人才集团(最高优先级), A=省国资委, B=兴湘集团, C=内参简报"
+        },
+        "output_file": {
+          "type": "string",
+          "description": "输出文件路径（裸路径格式，可选，默认同目录）"
+        },
+        "polish_options": {
+          "type": "object",
+          "description": "润色选项",
+          "properties": {
+            "remove_ai_trace": {
+              "type": "boolean",
+              "default": true,
+              "description": "去除AI痕迹"
+            },
+            "official_tone": {
+              "type": "boolean",
+              "default": true,
+              "description": "转换为公文口吻"
+            },
+            "subject_alignment": {
+              "type": "boolean",
+              "default": true,
+              "description": "主体归位检查"
+            },
+            "number_restraint": {
+              "type": "boolean",
+              "default": true,
+              "description": "数字克制处理"
+            }
+          }
+        },
+        "quality_check": {
+          "type": "object",
+          "description": "质检配置",
+          "properties": {
+            "enable_research_quality": {
+              "type": "boolean",
+              "default": true,
+              "description": "启用研究质量检查(R1-R8)"
+            },
+            "enable_expression_quality": {
+              "type": "boolean",
+              "default": true,
+              "description": "启用表达质量检查(E1-E7)"
+            },
+            "compliance_integration": {
+              "type": "boolean",
+              "default": true,
+              "description": "联动湘小法合规审查"
+            }
+          }
+        },
+        "recurrent_config": {
+          "type": "object",
+          "description": "循环迭代出品配置",
+          "properties": {
+            "max_loops": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "default": 5,
+              "description": "最大迭代轮次"
+            },
+            "act_threshold": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 1.0,
+              "default": 0.95,
+              "description": "累积置信度停止阈值"
+            },
+            "context_decay_factor": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 1.0,
+              "default": 0.7,
+              "description": "上下文衰减因子"
+            }
+          }
+        },
+        "deliverables": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["docx", "quality_report", "change_log", "compliance_report"]
+          },
+          "default": ["docx", "quality_report"],
+          "description": "交付物清单"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "tool_name": "xiangxiaoyin",
+      "parameters": {
+        "action": "full_pipeline",
+        "input_file": "D:\\Work@湘江研究院\\2026\\0410课题\\低空经济分析.md",
+        "template": "S",
+        "polish_options": {
+          "remove_ai_trace": true,
+          "official_tone": true,
+          "subject_alignment": true,
+          "number_restraint": true
+        },
+        "deliverables": ["docx", "quality_report", "compliance_report"]
+      }
+    }
+  ]
+}

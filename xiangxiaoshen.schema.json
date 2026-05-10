@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://xiangjiang-thinktank.org/schemas/xiangxiaoshen/v1.0.0",
+  "title": "湘小审·国资护审 Tool Schema",
+  "description": "湘江研究院权限审批与操作安全Agent的工具Schema定义",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["tool_name", "parameters"],
+  "properties": {
+    "tool_name": {
+      "type": "string",
+      "enum": ["xiangxiaoshen"],
+      "description": "工具标识符"
+    },
+    "parameters": {
+      "type": "object",
+      "required": ["action", "operation"],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "risk_assess",
+            "permission_check",
+            "operation_log",
+            "alert_check",
+            "whitelist_manage"
+          ],
+          "description": "执行的操作类型"
+        },
+        "operation": {
+          "type": "string",
+          "description": "操作描述"
+        },
+        "operation_type": {
+          "type": "string",
+          "enum": [
+            "file_read",
+            "file_write",
+            "file_delete",
+            "path_access",
+            "api_call",
+            "email_send",
+            "wecom_send",
+            "shell_exec",
+            "config_modify",
+            "web_search",
+            "doc_generate"
+          ],
+          "description": "操作类型"
+        },
+        "target_path": {
+          "type": "string",
+          "description": "操作目标路径（裸路径格式）"
+        },
+        "source_agent": {
+          "type": "string",
+          "description": "发起操作的Agent名称"
+        },
+        "risk_level": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"],
+          "description": "风险等级（可自动评估或人工指定）"
+        },
+        "auto_execute": {
+          "type": "boolean",
+          "default": false,
+          "description": "是否自动执行（仅low风险）"
+        },
+        "log_entry": {
+          "type": "object",
+          "description": "日志条目（用于operation_log action）",
+          "properties": {
+            "timestamp": { "type": "string" },
+            "operation": { "type": "string" },
+            "risk_level": { "type": "string" },
+            "decision": { "type": "string", "enum": ["ALLOW", "DENY", "PENDING"] },
+            "reason": { "type": "string" },
+            "agent": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "tool_name": "xiangxiaoshen",
+      "parameters": {
+        "action": "risk_assess",
+        "operation": "读取工作目录文件",
+        "operation_type": "file_read",
+        "target_path": "D:\\Work@湘江研究院\\2026\\0410课题\\低空经济分析.md",
+        "source_agent": "xiangxiaoyan",
+        "auto_execute": true
+      }
+    }
+  ]
+}

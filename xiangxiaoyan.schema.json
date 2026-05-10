@@ -1,0 +1,175 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://xiangjiang-thinktank.org/schemas/xiangxiaoyan/v2.1.0",
+  "title": "湘小研·政策智搜 Tool Schema",
+  "description": "湘江研究院政策研究与RAG知识库Agent的工具Schema定义",
+  "version": "2.1.0",
+  "type": "object",
+  "required": ["tool_name", "parameters"],
+  "properties": {
+    "tool_name": {
+      "type": "string",
+      "enum": ["xiangxiaoyan"],
+      "description": "工具标识符"
+    },
+    "parameters": {
+      "type": "object",
+      "required": ["action"],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "policy_search",
+            "policy_interpret",
+            "report_generate",
+            "policy_compare",
+            "rag_query",
+            "style_check",
+            "recurrent_research"
+          ],
+          "description": "执行的操作类型"
+        },
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "description": "检索关键词或查询语句"
+        },
+        "policy_brands": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "湘聚国企平台",
+              "英培计划",
+              "芙蓉计划",
+              "三高四新",
+              "湘智行动",
+              "国资潇湘行"
+            ]
+          },
+          "description": "优先检索的湖南国资政策品牌"
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "对比分析涉及的省份/地区列表"
+        },
+        "document_type": {
+          "type": "string",
+          "enum": [
+            "智库专报",
+            "实施方案",
+            "工作汇报",
+            "请示文件",
+            "内部研究"
+          ],
+          "description": "输出文档类型（用于文体识别）"
+        },
+        "max_results": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 20,
+          "description": "最大返回结果数"
+        },
+        "recurrent_config": {
+          "type": "object",
+          "description": "循环迭代检索配置",
+          "properties": {
+            "max_loops": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "default": 3,
+              "description": "最大迭代轮次"
+            },
+            "act_threshold": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 1.0,
+              "default": 0.9,
+              "description": "动态停止阈值"
+            },
+            "context_decay_factor": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 1.0,
+              "default": 0.7,
+              "description": "上下文衰减因子"
+            }
+          }
+        },
+        "output_format": {
+          "type": "string",
+          "enum": ["markdown", "json", "structured"],
+          "default": "markdown",
+          "description": "输出格式"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "enum": ["policy_search", "rag_query"]
+              }
+            }
+          },
+          "then": {
+            "required": ["query"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "enum": ["policy_compare"]
+              }
+            }
+          },
+          "then": {
+            "required": ["query", "regions"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "enum": ["report_generate"]
+              }
+            }
+          },
+          "then": {
+            "required": ["query", "document_type"]
+          }
+        }
+      ]
+    }
+  },
+  "examples": [
+    {
+      "tool_name": "xiangxiaoyan",
+      "parameters": {
+        "action": "policy_search",
+        "query": "低空经济产业政策",
+        "policy_brands": ["三高四新"],
+        "max_results": 10
+      }
+    },
+    {
+      "tool_name": "xiangxiaoyan",
+      "parameters": {
+        "action": "policy_compare",
+        "query": "低空经济",
+        "regions": ["湖南", "安徽", "四川", "江苏"],
+        "recurrent_config": {
+          "max_loops": 5,
+          "act_threshold": 0.95
+        }
+      }
+    }
+  ]
+}

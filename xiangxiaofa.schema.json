@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://xiangjiang-thinktank.org/schemas/xiangxiaofa/v3.0.0",
+  "title": "湘小法·国资护法 Tool Schema",
+  "description": "湘江研究院合规风控法务Agent的工具Schema定义",
+  "version": "3.0.0",
+  "type": "object",
+  "required": ["tool_name", "parameters"],
+  "properties": {
+    "tool_name": {
+      "type": "string",
+      "enum": ["xiangxiaofa"],
+      "description": "工具标识符"
+    },
+    "parameters": {
+      "type": "object",
+      "required": ["action"],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "legal_review",
+            "compliance_audit",
+            "risk_assessment",
+            "quality_gate",
+            "contract_review",
+            "due_diligence",
+            "seven_laws_check",
+            "data_source_verify",
+            "output_template"
+          ],
+          "description": "执行的操作类型"
+        },
+        "target_file": {
+          "type": "string",
+          "description": "待审查文件路径（裸路径格式）"
+        },
+        "review_mode": {
+          "type": "string",
+          "enum": ["full", "research", "legal", "compliance", "general"],
+          "default": "full",
+          "description": "审查模式：full=全维模式, research=研究模式, legal=法律模式, compliance=合规模式, general=通用模式"
+        },
+        "business_type": {
+          "type": "string",
+          "enum": [
+            "investment",
+            "property_transaction",
+            "foreign_investment",
+            "financing_guarantee",
+            "contract",
+            "intellectual_property",
+            "labor",
+            "data_compliance",
+            "bidding",
+            "tax",
+            "antitrust",
+            "general"
+          ],
+          "default": "general",
+          "description": "业务类型（用于11类风险覆盖）"
+        },
+        "risk_dimensions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "legal_compliance",
+              "soe_regulation",
+              "business_operation",
+              "moral_risk"
+            ]
+          },
+          "default": ["legal_compliance", "soe_regulation", "business_operation"],
+          "description": "风险评估维度"
+        },
+        "review_level": {
+          "type": "string",
+          "enum": ["argumentation", "deduction", "quantification"],
+          "default": "argumentation",
+          "description": "审查层级：argumentation=论证层, deduction=推演层, quantification=量化层"
+        },
+        "output_type": {
+          "type": "string",
+          "enum": [
+            "legal_opinion",
+            "compliance_report",
+            "risk_warning",
+            "compliance_confirmation",
+            "quality_evaluation"
+          ],
+          "default": "compliance_report",
+          "description": "输出文档类型"
+        },
+        "score_threshold": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 37,
+          "default": 34,
+          "description": "通过阈值（37分制）"
+        },
+        "check_data_sources": {
+          "type": "boolean",
+          "default": true,
+          "description": "是否执行数据来源验证"
+        },
+        "check_logic": {
+          "type": "boolean",
+          "default": true,
+          "description": "是否执行逻辑一致性检查"
+        },
+        "industry_benchmarks": {
+          "type": "boolean",
+          "default": true,
+          "description": "是否调用行业基准参数库"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "enum": ["legal_review", "compliance_audit", "risk_assessment", "quality_gate", "contract_review", "due_diligence", "seven_laws_check", "data_source_verify"]
+              }
+            }
+          },
+          "then": {
+            "required": ["target_file"]
+          }
+        }
+      ]
+    }
+  },
+  "examples": [
+    {
+      "tool_name": "xiangxiaofa",
+      "parameters": {
+        "action": "quality_gate",
+        "target_file": "D:\\Work@湘江研究院\\2026\\0410课题\\低空经济分析.md",
+        "review_mode": "full",
+        "business_type": "investment",
+        "review_level": "deduction",
+        "score_threshold": 34,
+        "check_data_sources": true,
+        "check_logic": true
+      }
+    }
+  ]
+}
